@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>陈星的AI作品集</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --neon-cyan: #00f5ff;
+      --neon-purple: #bf00ff;
+      --neon-pink: #ff0080;
+      --card-bg: rgba(10, 10, 30, 0.75);
+      --border-glow: rgba(0, 245, 255, 0.3);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #e0e0ff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 80px 20px 60px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 28px;
+    }
+
+    .avatar-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+      animation: spin 4s linear infinite;
+      z-index: -1;
+    }
+
+    .avatar-wrap img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0a0a1e;
+      display: block;
+    }
+
+    .avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      border: 3px solid #0a0a1e;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-title {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease infinite, glitch 8s infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes glitch {
+      0%, 90%, 100% { text-shadow: none; transform: none; }
+      92% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-cyan); transform: skewX(1deg); }
+      94% { text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-cyan); transform: skewX(-1deg); }
+      96% { text-shadow: none; transform: none; }
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: rgba(200, 200, 255, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border-glow);
+      background: var(--card-bg);
+      color: var(--neon-cyan);
+      font-size: 0.9rem;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s;
+    }
+
+    .badge:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px var(--neon-cyan);
+      color: #fff;
+    }
+
+    /* ── SECTION ── */
+    .section-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      margin: 60px 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--neon-cyan), transparent);
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-decoration: none;
+      color: inherit;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(191,0,255,0.05));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 8px 32px rgba(0, 245, 255, 0.25), 0 0 0 1px rgba(0,245,255,0.1);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon { font-size: 2rem; }
+
+    .card-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-url {
+      font-size: 0.75rem;
+      color: rgba(0, 245, 255, 0.6);
+      word-break: break-all;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      font-size: 0.85rem;
+      color: var(--neon-cyan);
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: all 0.3s;
+    }
+
+    .card:hover .card-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px 20px 20px;
+      color: rgba(200,200,255,0.4);
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div id="vanta-bg"></div>
+
+<div class="container">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="avatar-wrap">
+      <img src="头像图片.png" alt="陈星" />
+    </div>
+    <h1 class="hero-title">陈星的AI作品集</h1>
+    <p class="hero-sub">欢迎和我一起玩AI ~~</p>
+    <div class="hero-links">
+      <a class="badge" href="https://www.xiaohongshu.com" target="_blank" rel="noopener">
+        📕 小红书：电力十足
+      </a>
+      <a class="badge" href="mailto:budaozhe1991@gmail.com">
+        ✉️ budaozhe1991@gmail.com
+      </a>
+    </div>
+  </section>
+
+  <!-- AI 游戏 -->
+  <h2 class="section-title">🎮 我的AI游戏</h2>
+  <div class="grid">
+    <a class="card" href="https://chenxicard.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">🃏</div>
+      <div class="card-name">卡牌游戏</div>
+      <div class="card-url">chenxicard.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://chenxingxjxf.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">🚀</div>
+      <div class="card-name">星际争霸游戏</div>
+      <div class="card-url">chenxingxjxf.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://chenxingszfk.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">🧩</div>
+      <div class="card-name">数块消除游戏</div>
+      <div class="card-url">chenxingszfk.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://chenxicyfz.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">📖</div>
+      <div class="card-name">单词辅助游戏</div>
+      <div class="card-url">chenxicyfz.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://chenxingxjfy.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">🛡️</div>
+      <div class="card-name">新星防御游戏</div>
+      <div class="card-url">chenxingxjfy.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://secaiyishu.chenyang-ai.xyz/" target="_blank" rel="noopener">
+      <div class="card-icon">🎨</div>
+      <div class="card-name">色彩敏感度游戏</div>
+      <div class="card-url">secaiyishu.chenyang-ai.xyz</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://gitd2p7yoixz4.ok.kimi.link/" target="_blank" rel="noopener">
+      <div class="card-icon">🧠</div>
+      <div class="card-name">MBTI人格测试</div>
+      <div class="card-url">gitd2p7yoixz4.ok.kimi.link</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+  </div>
+
+  <!-- AI 应用 -->
+  <h2 class="section-title">⚡ 我的AI应用</h2>
+  <div class="grid">
+    <a class="card" href="https://www.doubao.com/share/code/201655d002efc315" target="_blank" rel="noopener">
+      <div class="card-icon">🎰</div>
+      <div class="card-name">在线抽奖</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://www.doubao.com/share/code/a0b1fb925ce2f00c" target="_blank" rel="noopener">
+      <div class="card-icon">📈</div>
+      <div class="card-name">一次函数可视化</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://www.doubao.com/share/code/4f920f548a279f42" target="_blank" rel="noopener">
+      <div class="card-icon">🔷</div>
+      <div class="card-name">方程3D可视化</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://www.doubao.com/share/code/cb6e6a8030739bad" target="_blank" rel="noopener">
+      <div class="card-icon">🌈</div>
+      <div class="card-name">色彩敏感度测试</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://www.doubao.com/share/code/172c2ec0a68789b7" target="_blank" rel="noopener">
+      <div class="card-icon">📐</div>
+      <div class="card-name">单位换算工具</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+    <a class="card" href="https://www.doubao.com/share/code/1e2e90bb7283591e" target="_blank" rel="noopener">
+      <div class="card-icon">🔊</div>
+      <div class="card-name">单词听写助手</div>
+      <div class="card-url">doubao.com/share/code/...</div>
+      <div class="card-arrow">前往体验 →</div>
+    </a>
+  </div>
+</div>
+
+<footer>© 2026 陈星 · Powered by AI &amp; ❤️</footer>
+
+<script>
+  VANTA.BIRDS({
+    el: "#vanta-bg",
+    mouseControls: true,
+    touchControls: true,
+    gyroControls: false,
+    minHeight: 200.00,
+    minWidth: 200.00,
+    scale: 1.00,
+    scaleMobile: 1.00,
+    backgroundColor: 0x050510,
+    color1: 0x00f5ff,
+    color2: 0xbf00ff,
+    colorMode: "lerp",
+    birdSize: 1.2,
+    wingSpan: 28.00,
+    speedLimit: 4.00,
+    separation: 60.00,
+    alignment: 50.00,
+    cohesion: 50.00,
+    quantity: 3.00
+  });
+</script>
+</body>
+</html>
